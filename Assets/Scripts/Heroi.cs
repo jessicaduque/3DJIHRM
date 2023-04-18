@@ -5,11 +5,12 @@ using UnityEngine;
 public class Heroi : MonoBehaviour
 {
     public float speed = 2.0f;
-    public float sensibilidade;
-
     public float jumpForce = 5f;
+
     bool isGrounded = false;
+
     Rigidbody Rb;
+    public Transform cam;
 
 
     // Start is called before the first frame update
@@ -20,46 +21,46 @@ public class Heroi : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Pular();
+        //Pular();
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 movement = Vector3.zero;
+        //inputs
+        float horInput = Input.GetAxisRaw("Horizontal") * speed;
+        float verInput = Input.GetAxisRaw("Vertical") * speed;
 
-        if (Input.GetKey(KeyCode.W))
-        {
-            movement += Vector3.forward;
-        }
+        //camera dir
+        Vector3 camForward = cam.forward;
+        Vector3 camRight = cam.right;
 
-        if (Input.GetKey(KeyCode.S))
-        {
-            movement -= Vector3.forward;
-        }
+        camForward.y = 0;
+        camRight.y = 0;
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            movement -= Vector3.right;
-        }
+        //creating relate cam direction
+        Vector3 forwardRelative = verInput * camForward;
+        Vector3 RightRelative = horInput * camRight;
 
-        if (Input.GetKey(KeyCode.D))
-        {
-            movement += Vector3.right;
-        }
+        Vector3 moveDir = forwardRelative + RightRelative;
 
-        transform.position += movement.normalized * speed * Time.deltaTime;
+        //movement
 
-        float mouseX = Input.GetAxis("Mouse X") * sensibilidade * Time.deltaTime;
-        transform.Rotate(Vector3.up * mouseX);
+        Rb.velocity = new Vector3(moveDir.x, Rb.velocity.y, moveDir.z);
+
+        //if (Input.GetButtonDown("Jump") && Mathf.Approximately(Rb.velocity.y, 0)) Rb.velocity = new Vector3(Rb.velocity.x, jumpForce, Rb.velocity.z);
+
+        transform.forward = new Vector3(Rb.velocity.x, 0f, Rb.velocity.z);
+
     }
 
 
-    void Pular()
+    /*void Pular()
     {
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            Rb.AddForce(Vector3.up * jumpForce);
+            Rb.AddForce(Vector3.up jumpForce);
         }
     }
+    */
 }
